@@ -1,0 +1,41 @@
+// Link JS
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.5/jspdf.min.js"></script>
+
+//container-print is the id of the div you want to print
+Swal.fire({
+    title: 'Please wait...',
+    html: 'We are generating the PDF with the screen information.',
+    timerProgressBar: true,
+    didOpen: () => {
+        Swal.showLoading()
+    }
+});
+
+setTimeout(function(){
+    html2canvas(document.getElementById("container-print"), {
+        onrendered: function (canvas) {
+            var imgData = canvas.toDataURL('image/png');
+            var imgWidth = 210; 
+            var pageHeight = 295;  
+            var imgHeight = canvas.height * imgWidth / canvas.width;
+            var heightLeft = imgHeight;
+
+            var doc = new jsPDF('p', 'mm');
+            var position = 0;
+
+            doc.addImage(imgData, 'jpeg', 0, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
+
+            while (heightLeft >= 0) {
+                position = heightLeft - imgHeight;
+                doc.addPage();
+                doc.addImage(imgData, 'jpeg', 0, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+            }
+            doc.save( 'file.pdf');
+            Swal.close();
+        }
+    });
+}, 1000);
