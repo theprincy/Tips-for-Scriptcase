@@ -1,0 +1,68 @@
+?>
+<script>
+	
+	//Não mexer em mais nada além dos dois itens abaixo, jogar esse código no onScriptInit da consulta com um botão run criado.
+	
+	//classe do campo que vai totalizar, troque o nome priceorder pelo nome do seu campo
+	var campo_soma = '.css_priceorder_grid_line';
+	//id do local onde vai ser jogado o total
+	var campo_total = '#swTotal';
+	
+	function selectAll(e) {
+		var valores = [], span, soma = 0, valor_final;
+
+		$('.scGridTabela tbody tr').each(function(index, element) {
+			if ($(element).hasClass('scGridFieldOdd') || $(element).hasClass('scGridFieldEven')) {
+				span = $(element).find(campo_soma).text().toString().replace('.', '').replace(',', '.');
+				valores.push(parseFloat(span));
+			}
+		});
+		
+		valores.forEach(number => soma += number );
+		
+		valor_final = soma.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+		
+		$(campo_total).text(valor_final);
+	}
+	
+	function selectCheckbox() {
+		var valores = [], span, soma = 0, valor_final;
+		$('input.sc-ui-check-run').each(function(index, element) {
+			if($(element).prop("checked")) {
+				span = $(element).parent().parent().find(campo_soma).text().toString().replace('.', '').replace(',', '.');
+				valores.push(parseFloat(span));
+			}
+		});
+		
+		valores.forEach(number => soma += number );
+		
+		valor_final = soma.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+		
+		$(campo_total).text(valor_final);
+	}
+	
+	function clearAll() {
+		$(".sc-ui-check-run").prop("checked", false);
+		
+		$(campo_total).text('0.00');
+	}
+	
+	$(document).ready(function() {
+		
+		setInterval(function(){
+			$('input.sc-ui-check-run').on('click', function() {
+				selectCheckbox();
+			});
+
+			$('input#NM_ck_run0').on('click', function() {
+				if (this.checked) {
+					selectAll(this);
+				} else {
+					clearAll();
+				}			
+			});
+		}, 500);	
+		
+	});
+</script>
+<?php
