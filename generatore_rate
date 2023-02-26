@@ -1,0 +1,60 @@
+Evento onLoad:
+sc_include_library('prj','actions','actions-master/class/DataGrid.class.php');
+mostraParcelas();
+Método mostraParcelas():
+
+if (empty({nroParcelas}) or empty({valor})  or empty({primeiroVencto})) return;
+
+$_parcelas = [];
+$_valor  = round({valor} / {nroParcelas},2);
+$_valor1 = round($_valor+{valor}-($_valor*{nroParcelas}),2);
+$dt = new DateTime({primeiroVencto});
+$dia   = $dt->format("d");
+$mes   = $dt->format("m");
+$ano  = $dt->format("Y");
+
+for ($i=1;$i<={nroParcelas};$i++) {
+ //echo "$dia / $mes / $ano<br>";
+ if ($i==1) {
+  $_parcelas[]=[$i,$_valor1,{primeiroVencto}];
+ }else{
+  $mes++;
+  if ($mes == 13) {
+   $ano++;$mes=1;
+  }
+  if ($mes == 2 and in_array($dia, [29,30,31])) {
+   if (date('L', mktime(0, 0, 0, 1, 1, $ano))) {
+    $dia2 = 29;
+   }else{ 
+    $dia2 = 28;
+   }
+  }
+  if ($mes != 2) {
+   if (in_array($mes,[4,6,9,11])  and $dia == 31) {
+    $dia2 = 30;
+   }else{
+    $dia2 = $dia;
+   }
+  }
+  $dia = str_pad($dia, 2, "0", STR_PAD_LEFT);
+  $mes = str_pad($mes, 2, "0", STR_PAD_LEFT);
+  $_parcelas[]=[$i,$_valor,$ano.'-'.$mes.'-'.$dia2];
+ }
+}
+
+
+//echo '<pre>'; print_r($_parcelas); echo '</pre>';
+
+$dg = new DataGrid(3);
+
+$dg->addHeader(['N.Parc','Valor','Vencimento']);
+
+$dg->setZebraColor('GRAY');
+
+foreach ($_parcelas as $value) {
+ $value[1]='R$ '.number_format($value[1],2,',','.');
+ $dt = new DateTime($value[2]);
+ $value[2] = $dt->format("d/m/Y");
+ $dg->addCell($value);
+}    
+{Parcelas} = $dg->create();
