@@ -1,0 +1,19 @@
+``CAMPO SELECT DINAMICO RECONSTRUÍDO COM DADOS DE UM ARRAY``
+
+Evento onload:
+
+$array = [1=>'VERDE',2=>'AMARELO',3=>'AZUL',4=>'BRANCO'];
+$option = '<option></option>';
+foreach ($array as $key =>$value) {
+  $option .= "<option value='$key'>$value</option>";
+}
+
+echo <<<HTML
+<script>
+$(document).ready(function(){
+   $("#id_sc_field_campo_select").html("$option");
+}); 
+</script>
+HTML;
+
+onde id_sc_field_campo_select é o id do elemento do campo {campo_select}
